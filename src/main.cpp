@@ -1,53 +1,59 @@
 #include <iostream>
 #include <SDL.h>
-#include <SDL_image.h>
 #include <SDL_mixer.h>
 
+class Window {
+    SDL_Window *window = nullptr;
+    SDL_Surface *screenSurface = nullptr;
+    const int SCREEN_WIDTH = 640;
+    const int SCREEN_HEIGHT = 480;
+public:
+    
+    Window() {
+        //Initializing sdl video module
+        if (SDL_Init(SDL_INIT_VIDEO)) {
+            std::cout << "SDL could not initialize! SDL_Error: " << SDL_GetError() << std::endl;
+        } else {
+            //Create window
+            window = SDL_CreateWindow("SDL Tutorial", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+                                      SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+
+            if (window == nullptr) {
+                std::cout << "Window could not be created! SDL_Error: " << SDL_GetError() << std::endl;
+            }else{
+                //Get window surface
+                screenSurface = SDL_GetWindowSurface(window);
+            };
+        }
+    }
+
+    void loop() {
+
+        //Fill the surface white
+        SDL_FillRect(screenSurface, nullptr, SDL_MapRGB(screenSurface->format, 0xFF, 0xFF, 0xFF));
+
+        //Update the surface
+        SDL_UpdateWindowSurface(window);
+
+        //Hack to get window to stay up
+        SDL_Event e;
+        bool quit = false;
+        while (!quit) {
+            while (SDL_PollEvent(&e)) {
+                if (e.type == SDL_QUIT) quit = true;
+            }
+        }
+        SDL_DestroyWindow(window);
+
+        SDL_Quit();
+
+    }
+
+    ~Window() = default;
+};
 
 int main(int argc, char *args[]) {
-    // Init SDL module
-    SDL_DisplayMode displayMode;
-    if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
-        std::cout << "SDL_Init Error: " << SDL_GetError() << std::endl;
-        return 1;
-    }
-
-    // Getting info about screen
-    if (SDL_GetDesktopDisplayMode(0, &displayMode) != 0) {
-        std::cout << "GetDesktopDisplayMode Error:" << SDL_GetError();
-        return 1;
-    };
-
-    //Creating window
-    SDL_Window *win = SDL_CreateWindow("Title re", 0, 0, displayMode.w, displayMode.h, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
-    if (win == nullptr) {
-        std::cout << "SDL_CreateWindow Error: " << SDL_GetError() << std::endl;
-        return 1;
-    }
-    //Init renderer (renderer what will render our sprite)
-    SDL_Renderer *ren = SDL_CreateRenderer(win, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-    if (ren == nullptr) {
-        std::cout << "SDL_CreateRenderer Error: " << SDL_GetError() << std::endl;
-        return 1;
-    }
-
-    SDL_Rect player_RECT;
-    player_RECT.x = 0;   //Padding in Х
-    player_RECT.y = 0;   //Padding in Y
-    player_RECT.w = 333; //Width
-    player_RECT.h = 227; //Height
-
-    SDL_Rect background_RECT;
-    background_RECT.x = 0;
-    background_RECT.y = 0;
-    background_RECT.w = displayMode.w;
-    background_RECT.h = displayMode.h;
-
-    const int player_WIGHT = 333;   //Width of img
-    const int player_HEIGH = 227;   //Height of img
-    double TESTtexture_SCALE = 1.0; //Coefficient
-
-    SDL_Texture *player =  IMG_LoadTexture(ren,"..\\res\\player.png");
-
+    Window window;
+    window.loop();
     return 0;
 }

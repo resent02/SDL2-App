@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.26)
-project(SDL2_app)
+project(SDL2-app)
 
 set(CMAKE_CXX_STANDARD 17)
 
@@ -29,4 +29,5 @@ set(SOURCE_FILES
 )
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 
-target_link_libraries(${PROJECT_NAME} SDL2main SDL2)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
+target_link_libraries(${PROJECT_NAME} SDL2main SDL2 SDL2_image SDL2_mixer)
