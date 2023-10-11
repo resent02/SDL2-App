@@ -26,6 +26,8 @@ link_directories(${SDL2_MIXER_LIB_DIR})
 
 set(SOURCE_FILES
         src/main.cpp
+        src/Screen.cpp
+        src/Screen.h
 )
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})
 

@@ -1,59 +1,38 @@
-#include <iostream>
-#include <SDL.h>
-#include <SDL_mixer.h>
+#include "Screen.h"
+#include <cmath>
 
-class Window {
-    SDL_Window *window = nullptr;
-    SDL_Surface *screenSurface = nullptr;
-    const int SCREEN_WIDTH = 640;
-    const int SCREEN_HEIGHT = 480;
-public:
-    
-    Window() {
-        //Initializing sdl video module
-        if (SDL_Init(SDL_INIT_VIDEO)) {
-            std::cout << "SDL could not initialize! SDL_Error: " << SDL_GetError() << std::endl;
-        } else {
-            //Create window
-            window = SDL_CreateWindow("SDL Tutorial", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-                                      SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
-
-            if (window == nullptr) {
-                std::cout << "Window could not be created! SDL_Error: " << SDL_GetError() << std::endl;
-            }else{
-                //Get window surface
-                screenSurface = SDL_GetWindowSurface(window);
-            };
-        }
-    }
-
-    void loop() {
-
-        //Fill the surface white
-        SDL_FillRect(screenSurface, nullptr, SDL_MapRGB(screenSurface->format, 0xFF, 0xFF, 0xFF));
-
-        //Update the surface
-        SDL_UpdateWindowSurface(window);
-
-        //Hack to get window to stay up
-        SDL_Event e;
-        bool quit = false;
-        while (!quit) {
-            while (SDL_PollEvent(&e)) {
-                if (e.type == SDL_QUIT) quit = true;
-            }
-        }
-        SDL_DestroyWindow(window);
-
-        SDL_Quit();
-
-    }
-
-    ~Window() = default;
+struct vec3 {
+    float x, y, z;
 };
 
+void rotate(vec3 &pont, float x = 1, float y = 1, float z = 1) {
+    float rad = 0;
+    
+}
+
+void line(Screen &screen, float x1, float y1, float x2, float y2) {
+    float dx = x2 - x1;
+    float dy = y2 - y1;
+
+    float length = std::sqrt(dx * dx + dy * dy);
+    float angle = std::atan2(dy, dx);
+    for (float i = 0; i < length; i++) {
+        screen.pixel(x1 + std::sin(angle) * i,
+                     y1 + std::cos(angle) * i);
+    }
+
+}
+
 int main(int argc, char *args[]) {
-    Window window;
-    window.loop();
+    Screen screen;
+    for (int i = 0; i < 100; ++i) {
+        screen.pixel(rand() % 680, rand() % 480);
+    }
+    line(screen, 100, 100, 200, 100);
+    line(screen, 200, 100, 200, 0);
+    while (true) {
+        screen.show();
+        screen.input();
+    }
     return 0;
 }
